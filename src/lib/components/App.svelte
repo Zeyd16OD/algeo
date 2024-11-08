@@ -101,6 +101,7 @@
 
 <main>
 	<Sidebar {regions} {belongs} />
+
 	<Keys {regions} />
 
 	<h1>Choose a wilaya.</h1>

@@ -1,7 +1,13 @@
 <script>
+	// @ts-nocheck
+
 	import Nav from '$lib/components/Nav.svelte';
 	import App from '$lib/components/App.svelte';
 </script>
+
+<svelte:head>
+	<title>ALGEO - Discover Algeria's Future, Present and Past.</title>
+</svelte:head>
 
 <main>
 	<Nav />

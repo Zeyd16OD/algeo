@@ -1,14 +1,12 @@
 <script>
 	import { blur } from 'svelte/transition';
 
-	let API = atob('QUl6YVN5QWo4WUlCVE5OTzhpWnBPc204ZVhockFUckFib184azJn');
-
 	export let regions;
 	export let belongs;
 
 	import Fa from 'svelte-fa';
 
-	import { faArrowLeft, faBook } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faBook, faSpinner } from '@fortawesome/free-solid-svg-icons';
 	import { currentWilaya } from '$lib/stores';
 
 	import Slider from '$lib/components/Slider.svelte';
@@ -23,62 +21,18 @@
 	function job() {
 		data = {};
 
-		const myHeaders = new Headers();
-		myHeaders.append('Content-Type', 'application/json');
-
-		const raw = JSON.stringify({
-			contents: [
-				{
-					parts: [
-						{
-							text: `Generate a JSON object as string for the Algerian wilaya of ${$currentWilaya.name} in around ${value},
-
-
-if (year === current year) then give the news of that wilaya...
-if (year < current year)      then give historical events (3 or 5 at minimum) about that year, if you have a lack of events (of information), then give the events around it.
-if (year > current Year) then give future predictions about that year at that wilaya ONLY THAT YEAR OR NEWER...
-
-response SHOULD BE A JSON ONLY...
-
-json structure:
-
-{
-    name: 'wilaya's name',
-    events: [
-      ... {
-         name: 'name of the event',
-         date: 'the human understandable date, could be the year only but try to give a precise date),
-         description: 'the description of that event'
-       }
-       ],
-       description: 'Description of the wilaya, geographical positioning, wilayas around it, and if possible year of creation.
- }`
-						}
-					]
-				}
-			]
-		});
-
-		const requestOptions = {
-			method: 'POST',
-			headers: myHeaders,
-			body: raw,
-			redirect: 'follow'
-		};
-
 		loading = true;
 
-		fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API}`,
-			requestOptions
-		)
-			.then((response) => response.json()) // Fetches the JSON content directly
+		fetch('/info', {
+			body: JSON.stringify({
+				name: $currentWilaya.name,
+				value
+			}),
+			method: 'POST'
+		})
+			.then((i) => i.json())
 			.then((result) => {
-				const jsonString = result.candidates[0].content.parts[0].text;
-				const parsedJSON = JSON.parse(jsonString.match(/```json\n([\s\S]*?)\n```/)[1]); // Extracts and parses JSON string
-
-				data = parsedJSON;
-
+				data = result;
 				loading = false;
 			})
 			.catch((error) => {
@@ -86,6 +40,25 @@ json structure:
 				console.log(error);
 				alert('An error has occured, please try again!');
 			});
+
+		// fetch(
+		// 	`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API}`,
+		// 	requestOptions
+		// )
+		// 	.then((response) => response.json()) // Fetches the JSON content directly
+		// 	.then((result) => {
+		// 		const jsonString = result.candidates[0].content.parts[0].text;
+		// 		const parsedJSON = JSON.parse(jsonString.match(/```json\n([\s\S]*?)\n```/)[1]); // Extracts and parses JSON string
+
+		// 		data = parsedJSON;
+
+		// 		loading = false;
+		// 	})
+		// 	.catch((error) => {
+		// 		loading = false;
+		// 		console.log(error);
+		// 		alert('An error has occured, please try again!');
+		// 	});
 	}
 </script>
 
@@ -168,7 +141,9 @@ json structure:
 				</section>
 			</div>
 		{:else}
-			<h1>Loading...</h1>{/if}
+			<h1>
+				<Fa icon={faSpinner} spin /> Loading
+			</h1>{/if}
 	</div>
 {/key}
 
