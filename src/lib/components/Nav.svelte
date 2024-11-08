@@ -6,7 +6,7 @@
 
 	<div class="links">
 		<a href="/">Home</a>
-		<a href="/index.html" target="_blank">Timeline</a>
+		<a href="/timeline.html" target="_blank">Timeline</a>
 	</div>
 </nav>
 
